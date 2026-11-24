@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark-default">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registrasi Data</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#111827">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- VIEW 1: REGISTRASI (Beranda & Database) -->
+    <div id="view-registrasi" class="view-section active">
+        
+        <div class="sub-tab-container">
+            <button id="tab-beranda" class="sub-tab active" onclick="switchSubTab('beranda')">Beranda</button>
+            <button id="tab-database" class="sub-tab" onclick="switchSubTab('database')">Database</button>
+        </div>
+
+        <div class="card-container">
+            <!-- SUB-VIEW: BERANDA (Form Input) -->
+            <div id="sub-beranda" class="sub-view active">
+                <h2>Registrasi Data</h2>
+                
+                <div class="form-group">
+                    <label for="nik">NIK</label>
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input type="text" id="nik" placeholder="Masukkan 16 digit angka" oninput="handleInputPintar(this)">
+                            <button class="btn-input-action btn-paste" id="btnPaste_nik" onclick="tempelInput('nik')" title="Tempel Clipboard">📋</button>
+                            <button class="btn-input-action btn-clear" id="btnClear_nik" onclick="hapusInput('nik')" title="Hapus Teks" style="display: none;">✖</button>
+                        </div>
+                        <button id="btnVoiceNik" class="btn-voice" onclick="mulaiVoiceInput('nik')" title="Dikte NIK">🎤</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="kk">KK (Opsional)</label>
+                    <div class="input-group">
+                        <div class="input-box">
+                            <input type="text" id="kk" placeholder="Boleh dikosongkan" oninput="handleInputPintar(this)">
+                            <button class="btn-input-action btn-paste" id="btnPaste_kk" onclick="tempelInput('kk')" title="Tempel Clipboard">📋</button>
+                            <button class="btn-input-action btn-clear" id="btnClear_kk" onclick="hapusInput('kk')" title="Hapus Teks" style="display: none;">✖</button>
+                        </div>
+                        <button id="btnVoiceKk" class="btn-voice" onclick="mulaiVoiceInput('kk')" title="Dikte KK">🎤</button>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="tambahData()">Tambah Data</button>
+                <button class="btn-secondary" onclick="switchSubTab('database')">Lihat Database ➔</button>
+            </div>
+
+            <!-- SUB-VIEW: DATABASE (Pencarian & Tabel) -->
+            <div id="sub-database" class="sub-view">
+                <h2>Database</h2>
+
+                <div class="search-container">
+                    <div class="input-box">
+                        <input type="text" id="searchInput" placeholder="🔍 Cari NIK / KK..." oninput="handleSearchInput(this)">
+                        <button class="btn-input-action btn-paste" id="btnPaste_searchInput" onclick="tempelInput('searchInput')" title="Tempel Clipboard">📋</button>
+                        <button class="btn-input-action btn-clear" id="btnClear_searchInput" onclick="hapusInput('searchInput')" title="Hapus Pencarian" style="display: none;">✖</button>
+                    </div>
+                    <button id="btnVoiceSearch" class="btn-voice" onclick="mulaiVoiceSearch()" title="Cari Suara">🎤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LIST DATA (Hanya tampil di Tab Database) -->
+        <div id="data-list-container" style="display: none; margin-top: 15px;">
+            <div class="data-list" id="dataContainer">
+                <div class="empty-state">Belum ada data tersimpan</div>
+            </div>
+            
+            <button id="btnLoadMore" class="btn-secondary" style="display: none; margin-top: 15px;" onclick="muatLebihBanyak()">Tampilkan Lebih Banyak ⬇</button>
+            
+            <!-- GROUP TOMBOL AKSI DATABASE (Selalu Tampil) -->
+            <div id="action-buttons" style="margin-top: 15px;">
+                <button class="btn-download" onclick="downloadTXT()">Download Semua (TXT)</button>
+                <div class="btn-group-half">
+                    <button class="btn-export" onclick="exportJSON()">📤 Export</button>
+                    <button class="btn-import" onclick="triggerImport()">📥 Import</button>
+                </div>
+                <input type="file" id="fileImport" accept=".json" style="display: none;" onchange="prosesImport(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW 2: NOTE / CATATAN -->
+    <div id="view-note" class="view-section">
+        <h2>Catatan Bebas</h2>
+        <textarea id="catatanInput" class="note-textarea" placeholder="Tulis catatan Anda di sini... (otomatis tersimpan)" oninput="simpanCatatan()"></textarea>
+    </div>
+
+    <!-- VIEW 3: TAMPILAN / SETTING -->
+    <div id="view-tampilan" class="view-section">
+        <h2>Pilih Tema</h2>
+        
+        <div class="theme-section-title">MODE GELAP (DARK)</div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-default', this)" data-theme-val="dark-default"><span class="theme-dot" style="background-color: #10b981;"></span><span>Default</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-ocean', this)" data-theme-val="dark-ocean"><span class="theme-dot" style="background-color: #0ea5e9;"></span><span>Ocean</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-sapphire', this)" data-theme-val="dark-sapphire"><span class="theme-dot" style="background-color: #3b82f6;"></span><span>Sapphire</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-lavender', this)" data-theme-val="dark-lavender"><span class="theme-dot" style="background-color: #a855f7;"></span><span>Lavender</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-permen', this)" data-theme-val="dark-permen"><span class="theme-dot" style="background-color: #ec4899;"></span><span>Permen</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-sunset', this)" data-theme-val="dark-sunset"><span class="theme-dot" style="background-color: #f97316;"></span><span>Sunset</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('dark-rosegold', this)" data-theme-val="dark-rosegold"><span class="theme-dot" style="background-color: #fda4af;"></span><span>Rose Gold</span></div>
+
+        <div class="theme-section-title">MODE TERANG (LIGHT)</div>
+        <div class="theme-item" onclick="pilihTemaItem('light-nordic', this)" data-theme-val="light-nordic"><span class="theme-dot" style="background-color: #64748b;"></span><span>Light Nordic</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-citrus', this)" data-theme-val="light-citrus"><span class="theme-dot" style="background-color: #f59e0b;"></span><span>Light Citrus</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-cottoncandy', this)" data-theme-val="light-cottoncandy"><span class="theme-dot" style="background-color: #f472b6;"></span><span>Light Cotton Candy</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-mintgreen', this)" data-theme-val="light-mintgreen"><span class="theme-dot" style="background-color: #14b8a6;"></span><span>Light Mint Green</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-illuminated', this)" data-theme-val="light-illuminated"><span class="theme-dot" style="background-color: #06b6d4;"></span><span>Light Illuminated</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-snow', this)" data-theme-val="light-snow"><span class="theme-dot" style="background-color: #38bdf8;"></span><span>Light Snow</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-morningglow', this)" data-theme-val="light-morningglow"><span class="theme-dot" style="background-color: #fb923c;"></span><span>Light Morning Glow</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-sunny', this)" data-theme-val="light-sunny"><span class="theme-dot" style="background-color: #eab308;"></span><span>Light Sunny</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-day', this)" data-theme-val="light-day"><span class="theme-dot" style="background-color: #0284c7;"></span><span>Light Day</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-bright', this)" data-theme-val="light-bright"><span class="theme-dot" style="background-color: #84cc16;"></span><span>Light Bright</span></div>
+        <div class="theme-item" onclick="pilihTemaItem('light-classic', this)" data-theme-val="light-classic"><span class="theme-dot" style="background-color: #475569;"></span><span>Light Classic</span></div>
+    </div>
+
+    <!-- BOTTOM NAVBAR -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchView('registrasi', this)">
+            <span class="icon">📋</span>
+            <span>Registrasi</span>
+        </button>
+        <button class="nav-item" onclick="switchView('note', this)">
+            <span class="icon">📝</span>
+            <span>Catatan</span>
+        </button>
+        <button class="nav-item" onclick="switchView('tampilan', this)">
+            <span class="icon">🎨</span>
+            <span>Tampilan</span>
+        </button>
+    </nav>
+
+    <!-- MODAL POPUP KOSTUM -->
+    <div id="customModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 id="modalTitle">Informasi</h3>
+            <p id="modalMessage">Pesan informasi di sini...</p>
+            <div class="modal-actions">
+                <button id="modalBtnCancel" class="btn-modal btn-cancel">Batal</button>
+                <button id="modalBtnConfirm" class="btn-modal btn-confirm">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+	
+	<!-- PWA & OFFLINE CONTROLS -->
+    <div class="floating-controls-center">
+        <button id="btnInstallPwa" class="btn-floating btn-pwa" style="display: none;">📲 Install App</button>
+        <button id="btnUpdatePwa" class="btn-floating btn-pwa-update" style="display: none;">🔄 Update Tersedia</button>
+        <div id="offlineIndicator" class="badge-offline" style="display: none;">📵 Mode Offline</div>
+    </div>
+
+    <!-- TOMBOL SCROLL UP -->
+    <button id="btnScrollTop" class="btn-floating btn-scroll" onclick="scrollToTop()" title="Kembali ke atas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
